@@ -42,7 +42,7 @@ $PAGE->requires->css('/block/scheduledcontent/main.css');
 require_login($courseid);
 
 $settingsnode = $PAGE->settingsnav->add(get_string('pluginname', 'block_scheduledcontent'));
-$editurl = new \moodle_url('/blocks/scheduled/schedules.php', array('courseid' => $courseid));
+$editurl = new \moodle_url('/blocks/scheduledcontent/schedules.php', array('courseid' => $courseid));
 $editnode = $settingsnode->add(get_string('edit'), $editurl);
 $editnode->make_active();
 
@@ -61,8 +61,6 @@ if (!empty(optional_param('addschedule', '', PARAM_TEXT))) {
     lib::addschedule($courseid);
     redirect($PAGE->url->__toString());
 }
-
-//echo $OUTPUT->render_from_template('block_scheduledcontent/add_schedule', array('courseid' => $courseid));
 
 require_once($CFG->dirroot . '/blocks/scheduledcontent/classes/form_schedules.php');
 

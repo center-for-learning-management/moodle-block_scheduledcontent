@@ -44,21 +44,23 @@ class block_scheduledcontent extends block_base /* was block_list */ {
         $this->content->text  = "";
         $this->content->footer = "";
 
+        $sql = "SELECT *
+                    FROM {block_scheduledcontent}
+                    WHERE timestart<?
+                        AND timeend>?
+                        AND contextid=?
+                    ORDER BY sort ASC";
+        $time = time();
+        $context = \context_block::instance($this->instance->id);
+        $schedules = array_values($DB->get_records_sql($sql, array($time, $time, $context->id)));
+
         $canmanage = $PAGE->user_is_editing($this->instance->id);
         if (!empty($canmanage)) {
-            $this->content->text = '<a href="' . $CFG->wwwroot . '/blocks/scheduledcontent/schedules.php?id=' . $this->instance->id . '" class="btn btn-block btn-secondary">';
+            $this->content->text = '<p>' . get_string('currently_no_scheduled_contents', 'block_scheduledcontent', array('no' => count($schedules))) . '</p>';
+            $this->content->text .= '<a href="' . $CFG->wwwroot . '/blocks/scheduledcontent/schedules.php?id=' . $this->instance->id . '">';
             $this->content->text .= get_string('modify_contents', 'block_scheduledcontent');
             $this->content->text .= '</a>';
         } else {
-            $sql = "SELECT *
-                        FROM {block_scheduledcontent}
-                        WHERE timestart<?
-                            AND timeend>?
-                            AND contextid=?
-                        ORDER BY sort ASC";
-            $time = time();
-            $schedules = $DB->get_records_sql($sql, array($time, $time, $this->instance->id));
-            print_r($schedules);
             foreach($schedules AS $schedule) {
                 if (!empty($schedule->showinmodal)) {
                     $this->content->text .= '<div><a href="#" onclick="require([\'block_scheduledcontent/main\'], function(M) { M.modal(' . $schedule->id . '); }); return false;">';

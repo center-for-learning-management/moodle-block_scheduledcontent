@@ -110,7 +110,8 @@ if ($data = $mform->get_data()) {
 
 $schedules = array_values($DB->get_records('block_scheduledcontent', array('contextid' => $context->id), 'timestart ASC,timeend ASC,sort ASC'));
 if (count($schedules) == 0) {
-    $schedules = array(lib::addschedule($context->id));
+    lib::addschedule($context->id);
+    redirect($PAGE->url->__toString());
 }
 $data = array('id' => $id);
 foreach ($schedules AS $id => $schedule) {

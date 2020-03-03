@@ -37,17 +37,30 @@ class block_scheduledcontent_external extends external_api {
      * @return created accesscode
      */
     public static function modal($id) {
+        global $DB;
         $params = self::validate_parameters(self::modal_parameters(), array('id' => $id));
-        $sql = "SELECT id,showinmodal
-                    FROM {block_scheduledcontent}
-                    WHERE timestart>?
-                        AND timeend<?
-                        AND id=?";
-        $time = time();
-        $schedules = $DB->get_records_sql($sql, array($time, $time, $params['id']));
-        foreach ($schedules AS $schedule) {
+        $schedule = $DB->get_record('block_scheduledcontent', array('id' => $id));
+        $context = context::instance_by_id($schedule->contextid);
+
+        if ($context->get_course_context(false)) {
+            if (is_viewing($context)) {
+                if ($schedule->timestart < time() AND $schedule->timeend > time()) {
+                    return $schedule->showinmodal;
+                } else {
+                    // Out of period.
+                    return "OUT OF PERIOD";
+                }
+            } else {
+                // Missing capability
+                return "NO CAPABILITY";
+            }
+        } else {
+            // We are on dashboard - everybody can view that.
             return $schedule->showinmodal;
         }
+
+
+
     }
     /**
      * Return definition.

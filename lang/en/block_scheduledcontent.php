@@ -25,6 +25,7 @@ $string['access_denied'] = 'Access denied!';
 $string['add_schedule'] = 'Add scheduled content';
 
 $string['caption'] = 'Caption (not shown to user)';
+$string['currently_no_scheduled_contents'] = 'Currently {$a->no} contents scheduled';
 $string['failed_to_save_no'] = 'Failed to store {$a->no} entries';
 $string['modify_contents'] = 'Manage scheduled contents';
 $string['pluginname'] = 'Scheduled Content';

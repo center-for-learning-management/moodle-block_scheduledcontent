@@ -21,25 +21,19 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_scheduledcontent;
-
 defined('MOODLE_INTERNAL') || die;
 
-class lib {
-    public static function addschedule($contextid) {
-        global $DB;
-        $schedule = (object) array(
-            'contextid' => $contextid,
-            'sort' => 1,
-            'timestart' => '',
-            'timeend' => '',
-            'caption' => '',
-            'showonpage' => '',
-            'showonpageformat' => 1,
-            'showinmodal' => '',
-            'showinmodalformat' => 1,
-        );
-        $schedule->id = $DB->insert_record('block_scheduledcontent', $schedule);
-        return $schedule;
-    }
+if ($hassiteconfig) {
+    $ADMIN->add('blockplugins', new admin_category('block_scheduledcontent', get_string('pluginname', 'block_scheduledcontent')));
+    $ADMIN->add('block_scheduledcontent', $settings);
+	//$ADMIN->add('localplugins', $settings);
+    //$settings->add(new admin_setting_configtext('local_experience/varname', get_string('string:varname', 'local_experience'), '', '', PARAM_TEXT));
+    $ADMIN->add(
+        'block_scheduledcontent',
+        new admin_externalpage(
+            'block_scheduledcontent_schedules',
+            get_string('schedules', 'block_scheduledcontent'),
+            $CFG->wwwroot . '/blocks/scheduledcontent/schedules.php'
+        )
+    );
 }

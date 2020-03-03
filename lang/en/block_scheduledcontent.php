@@ -21,14 +21,17 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Scheduled Content';
-$string['privacy:metadata'] = 'This plugin does not store any personal data';
-
 $string['access_denied'] = 'Access denied!';
 $string['add_schedule'] = 'Add scheduled content';
 
 $string['caption'] = 'Caption (not shown to user)';
 $string['failed_to_save_no'] = 'Failed to store {$a->no} entries';
+$string['modify_contents'] = 'Manage scheduled contents';
+$string['pluginname'] = 'Scheduled Content';
+$string['privacy:metadata'] = 'This plugin does not store any personal data';
+$string['scheduledcontent:addinstance'] = 'Add a new scheduled content block';
+$string['scheduledcontent:myaddinstance'] = 'Add a new scheduled content block to the My Moodle page';
+$string['schedules'] = 'Schedules';
 $string['showonpage'] = 'Content on page';
 $string['showinmodal'] = 'Content in modal';
 $string['successfully_saved_no'] = 'Successfully stored {$a->no} entries';

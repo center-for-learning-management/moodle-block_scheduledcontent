@@ -35,24 +35,28 @@ class form_schedules extends \moodleform {
     static $subdirs = 0;
 
     function definition() {
-        global $DB;
+        global $context, $DB;
 
         $editoroptions = array('subdirs'=>0, 'maxbytes'=>0, 'maxfiles'=>0,
                                'changeformat'=>0, 'context'=>null, 'noclean'=>0,
                                'trusttext'=>0, 'enable_filemanagement' => true);
 
         $mform = $this->_form;
-        $schedules = array_values($DB->get_records('block_scheduledcontent', array(), 'timestart ASC,timeend ASC,sort ASC'));
+        $schedules = array_values($DB->get_records('block_scheduledcontent', array('contextid' => $context->id), 'timestart ASC,timeend ASC,sort ASC'));
+        $mform->addElement('hidden', 'id', 0);
         $mform->addElement('hidden', 'elements', count($schedules));
-        $mform->addElement('html', '<a href="?addschedule=1" class="btn btn-block btn-primary">' . get_string('addschedule', 'block_scheduledcontent') . '</a>');
         foreach ($schedules AS $id => $schedule) {
-            $mform->addElement('header', 'schedule_' . $id, $schedule->caption);
+            $mform->addElement('header', 'schedule_' . $id,  (!empty($schedule->caption) ? $schedule->caption : '#' . $id ));
             $mform->addElement('hidden', 'id' . $id, $schedule->id);
             $mform->setType('id' . $id, PARAM_INT);
             $mform->addElement('text', 'caption' . $id, get_string('caption', 'block_scheduledcontent'));
             $mform->setType('caption' . $id, PARAM_RAW);
+            $mform->addElement('text', 'sort' . $id, get_string('order'));
+            $mform->setType('sort' . $id, PARAM_INT);
+            $mform->setDefault('sort', 0);
+
             // @todo maybe we have to convert the timestamp to an array to pass it to the form.
-            $mform->addElement('date_time_selector', 'timestart' . $id, get_string('from'), $schedule->timestart);
+            $mform->addElement('date_time_selector', 'timestart' . $id, get_string('from'));
             $mform->addElement('date_time_selector', 'timeend' . $id, get_string('to'));
 
             $mform->addElement('editor', 'showonpage' . $id, get_string('showonpage', 'block_scheduledcontent'));

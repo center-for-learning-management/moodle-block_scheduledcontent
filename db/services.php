@@ -16,30 +16,21 @@
 
 /**
  * @package    block_scheduledcontent
- * @copyright  2020 Zentrum für Lernmanagement (www.lernmanagement.at)
- * @author    Robert Schrenk
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2020 Center for Learning Management (http://www.lernmanagement.at)
+ * @author     Robert Schrenk
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace block_scheduledcontent;
 
 defined('MOODLE_INTERNAL') || die;
 
-class lib {
-    public static function addschedule($contextid) {
-        global $DB;
-        $schedule = (object) array(
-            'contextid' => $contextid,
-            'sort' => 1,
-            'timestart' => '',
-            'timeend' => '',
-            'caption' => '',
-            'showonpage' => '',
-            'showonpageformat' => 1,
-            'showinmodal' => '',
-            'showinmodalformat' => 1,
-        );
-        $schedule->id = $DB->insert_record('block_scheduledcontent', $schedule);
-        return $schedule;
-    }
-}
+// We define the web service functions to install.
+$functions = array(
+    'block_scheduledcontent_modal' => array(
+        'classname'   => 'block_scheduledcontent_external',
+        'methodname'  => 'modal',
+        'classpath'   => 'blocks/scheduledcontent/externallib.php',
+        'description' => 'Retrieves the modal content of a scheduled content.',
+        'type'        => 'read',
+        'ajax'        => 1,
+    ),
+);

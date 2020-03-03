@@ -23,9 +23,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2020030302;
+$plugin->version  = 2020030303;
 $plugin->requires = 2014051200;
 $plugin->component = 'block_scheduledcontent';
-$plugin->release = '0.2 (Build: 2020030302)';
+$plugin->release = '1.0 (Build: 2020030303)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array();

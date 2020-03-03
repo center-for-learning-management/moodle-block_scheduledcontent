@@ -52,9 +52,10 @@ class block_scheduledcontent extends block_base /* was block_list */ {
                     ORDER BY sort ASC";
         $time = time();
         $schedules = array_values($DB->get_records_sql($sql, array($time, $time, $COURSE->id)));
+        $context = \context_course::instance($COURSE->id);
 
         $canmanage = $PAGE->user_is_editing($this->instance->id);
-        if (!empty($canmanage)) {
+        if (!empty($canmanage) && has_capability('block/scheduledcontent:manage', $context)) {
             $this->content->text = '<p>' . get_string('currently_no_scheduled_contents', 'block_scheduledcontent', array('no' => count($schedules))) . '</p>';
             $this->content->text .= '<a href="' . $CFG->wwwroot . '/blocks/scheduledcontent/schedules.php?courseid=' . $COURSE->id . '">';
             $this->content->text .= get_string('modify_contents', 'block_scheduledcontent');
@@ -77,9 +78,13 @@ class block_scheduledcontent extends block_base /* was block_list */ {
         return true;
     }
     public function has_config() {
-        return true;
+        return false;
     }
     public function instance_allow_multiple() {
-        return true;
+        return false;
+    }
+    public function instance_delete() {
+        global $COURSE, $DB;
+        $DB->delete_records('block_scheduledcontent', array('courseid' => $COURSE->id));
     }
 }

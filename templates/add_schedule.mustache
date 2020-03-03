@@ -15,8 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 
-<form method="POST" action="" enctype="multipart/form-data">
-    <input type="hidden" id="courseid" value="{{courseid}}" />
+<form method="POST" action="?courseid={{courseid}}" enctype="multipart/form-data">
     <input type="submit" name="addschedule" class="btn btn-primary"
         value="{{#str}} add_schedule, block_scheduledcontent {{/str}}"/>
 </form>

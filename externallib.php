@@ -43,7 +43,7 @@ class block_scheduledcontent_external extends external_api {
         $context = \context_course::instance($schedule->courseid);
 
         if ($context->get_course_context(false)) {
-            if (is_viewing($context)) {
+            if ($schedule->courseid == 1 || has_capability('moodle/course:view', $context)) {
                 if ($schedule->timestart < time() AND $schedule->timeend > time()) {
                     return $schedule->showinmodal;
                 } else {

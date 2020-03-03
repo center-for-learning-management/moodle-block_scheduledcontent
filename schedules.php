@@ -33,15 +33,16 @@ require_once(__DIR__ . '/locallib.php');
 $courseid = required_param('courseid', PARAM_INT);
 $context = \context_course::instance($courseid);
 
-require_login();
 $PAGE->set_url(new \moodle_url('/blocks/scheduledcontent/schedules.php', array('courseid' => $courseid)));
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pluginname', 'block_scheduledcontent'));
 $PAGE->set_title(get_string('pluginname', 'block_scheduledcontent'));
 $PAGE->requires->css('/block/scheduledcontent/main.css');
 
+require_login($courseid);
+
 $settingsnode = $PAGE->settingsnav->add(get_string('pluginname', 'block_scheduledcontent'));
-$editurl = new \moodle_url('/blocks/scheduled/schedule.php', array('courseid' => $courseid));
+$editurl = new \moodle_url('/blocks/scheduled/schedules.php', array('courseid' => $courseid));
 $editnode = $settingsnode->add(get_string('edit'), $editurl);
 $editnode->make_active();
 
@@ -50,7 +51,7 @@ if (!has_capability('block/scheduledcontent:manage', $context)) {
     echo $OUTPUT->render_from_template('block_scheduledcontent/alert', array(
         'type' => 'danger',
         'content' => get_string('access_denied', 'block_scheduledcontent'),
-        'url' => new \moodle_url('/my', array()),
+        'url' => $context->get_url(), // new \moodle_url('/my', array()),
     ));
     echo $OUTPUT->footer();
     die();
@@ -61,12 +62,12 @@ if (!empty(optional_param('addschedule', '', PARAM_TEXT))) {
     redirect($PAGE->url->__toString());
 }
 
-echo $OUTPUT->render_from_template('block_scheduledcontent/add_schedule', array('courseid' => $courseid));
+//echo $OUTPUT->render_from_template('block_scheduledcontent/add_schedule', array('courseid' => $courseid));
 
 require_once($CFG->dirroot . '/blocks/scheduledcontent/classes/form_schedules.php');
 
 $schedules = array_values($DB->get_records('block_scheduledcontent', array('courseid' => $courseid), 'sort ASC,timestart ASC,timeend ASC'));
-$mform = new form_schedules();
+$mform = new form_schedules($PAGE->url->__toString());
 if ($data = $mform->get_data()) {
     $success = 0; $failed = 0;
     for ($a = 0; $a < $data->elements; $a++) {
@@ -79,10 +80,14 @@ if ($data = $mform->get_data()) {
         $showinmodaldraftid = file_get_submitted_draft_itemid('showinmodal' . $a);
 
         $showonpagetext = file_save_draft_area_files($showonpagedraftid, $context->id, 'block_scheduledcontent', 'showonpage',
-                            $data->{'id' . $a}, array('subdirs'=>false), $showonpagetext);
+                            $data->{'id' . $a}, form_schedules::$editoroptions, $showonpagetext);
         $showinmodaltext = file_save_draft_area_files($showinmodaldraftid, $context->id, 'block_scheduledcontent', 'showinmodal',
-                            $data->{'id' . $a}, array('subdirs'=>false), $showinmodaltext);
+                            $data->{'id' . $a}, form_schedules::$editoroptions, $showinmodaltext);
 
+        $showonpagetext = file_rewrite_pluginfile_urls($showonpagetext, 'pluginfile.php',
+                            $context->id, 'block_scheduledcontent', 'showonpage', $data->{'id' . $a});
+        $showinmodaltext = file_rewrite_pluginfile_urls($showinmodaltext, 'pluginfile.php',
+                            $context->id, 'block_scheduledcontent', 'showinmodal', $data->{'id' . $a});
         $schedules[$a] = (object) array(
             'id' => $data->{'id' . $a},
             'blockid' => $blockid,
@@ -127,15 +132,29 @@ foreach ($schedules AS $a => $schedule) {
     foreach ($fields AS $field) {
         $data[$field . $a] = $schedule->{$field};
     }
+
+    $showonpage_editor = file_get_submitted_draft_itemid('showonpage' . $a);
+    $schedule->showonpage = file_prepare_draft_area($showonpage_editor, $context->id, 'block_scheduledcontent', 'showonpage',
+                                       $schedule->{'id'.$a}, array('subdirs'=>true), $schedule->showonpage);
     $data['showonpage' . $a] = array(
         'text' => $schedule->showonpage,
         'format' => $schedule->showonpageformat,
+        'itemid' => $showonpage_editor,
     );
+
+    $showinmodal_editor = file_get_submitted_draft_itemid('showinmodal' . $a);
+    $schedule->showinmodal = file_prepare_draft_area($showinmodal_editor, $context->id, 'block_scheduledcontent', 'showinmodal',
+                                       $schedule->{'id'.$a}, array('subdirs'=>true), $schedule->showinmodal);
     $data['showinmodal' . $a] = array(
         'text' => $schedule->showinmodal,
         'format' => $schedule->showinmodalformat,
+        'itemid' => $showinmodal_editor,
     );
+
+    //$data = file_prepare_standard_editor($data, 'showonpage' . $a, form_schedules::$editoroptions, $context, 'block_scheduledcontent', 'showonpage', $schedule->id);
+    //$data = file_prepare_standard_editor($data, 'showinmodal' . $a, form_schedules::$editoroptions, $context, 'block_scheduledcontent', 'showinmodal', $schedule->id);
 }
+
 $mform->set_data($data);
 
 $mform->display();

@@ -28,45 +28,52 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . "/formslib.php");
 
 class form_schedules extends \moodleform {
-    static $accepted_types = '';
-    static $areamaxbytes = 10485760;
-    static $maxbytes = 1024*1024;
-    static $maxfiles = 1;
-    static $subdirs = 0;
+    public static $editoroptions = array('subdirs'=>0, 'maxbytes'=>1024*1024, 'maxfiles'=>10,
+                           'changeformat'=>1, 'context'=>null, 'noclean'=>0,
+                           'trusttext'=>0, 'enable_filemanagement' => true);
+
 
     function definition() {
         global $DB, $schedules;
 
-        $editoroptions = array('subdirs'=>0, 'maxbytes'=>0, 'maxfiles'=>0,
-                               'changeformat'=>0, 'context'=>null, 'noclean'=>0,
-                               'trusttext'=>0, 'enable_filemanagement' => true);
-
         $mform = $this->_form;
+        $this->add_my_action_buttons($mform);
         $mform->addElement('hidden', 'courseid', 0);
         $mform->addElement('hidden', 'elements', count($schedules));
-        foreach ($schedules AS $id => $schedule) {
-            $mform->addElement('header', 'schedule_' . $id,  (!empty($schedule->caption) ? $schedule->caption : '#' . $id ));
-            $mform->addElement('hidden', 'id' . $id, $schedule->id);
-            $mform->setType('id' . $id, PARAM_INT);
-            $mform->addElement('text', 'caption' . $id, get_string('caption', 'block_scheduledcontent'));
-            $mform->setType('caption' . $id, PARAM_RAW);
-            $mform->addElement('text', 'sort' . $id, get_string('order'));
-            $mform->setType('sort' . $id, PARAM_INT);
+        foreach ($schedules AS $a => $schedule) {
+            $mform->addElement('header', 'schedule_' . $a,  (!empty($schedule->caption) ? $schedule->caption : '#' . ($a + 1) ));
+            if (!empty($schedule->caption)) {
+                $mform->setExpanded('schedule_' . $a, false);
+            }
+            $mform->addElement('hidden', 'id' . $a, $schedule->id);
+            $mform->setType('id' . $a, PARAM_INT);
+            $mform->addElement('text', 'caption' . $a, get_string('caption', 'block_scheduledcontent'));
+            $mform->setType('caption' . $a, PARAM_TEXT);
+            $mform->addElement('text', 'sort' . $a, get_string('order'));
+            $mform->setType('sort' . $a, PARAM_INT);
             $mform->setDefault('sort', 0);
 
-            // @todo maybe we have to convert the timestamp to an array to pass it to the form.
-            $mform->addElement('date_time_selector', 'timestart' . $id, get_string('from'));
-            $mform->setType('timestart' . $id, PARAM_INT);
-            $mform->addElement('date_time_selector', 'timeend' . $id, get_string('to'));
-            $mform->setType('timeend' . $id, PARAM_INT);
+            $mform->addElement('date_time_selector', 'timestart' . $a, get_string('from'));
+            $mform->setType('timestart' . $a, PARAM_INT);
+            $mform->addElement('date_time_selector', 'timeend' . $a, get_string('to'));
+            $mform->setType('timeend' . $a, PARAM_INT);
 
-            $mform->addElement('editor', 'showonpage' . $id, get_string('showonpage', 'block_scheduledcontent'));
-            $mform->setType('showonpage' . $id, PARAM_RAW);
-            $mform->addElement('editor', 'showinmodal' . $id, get_string('showinmodal', 'block_scheduledcontent'));
-            $mform->setType('showinmodal' . $id, PARAM_RAW);
+            $mform->addElement('editor', 'showonpage' . $a, get_string('showonpage', 'block_scheduledcontent'), null, self::$editoroptions);
+            $mform->setType('showonpage' . $a, PARAM_RAW);
+            $mform->addElement('editor', 'showinmodal' . $a, get_string('showinmodal', 'block_scheduledcontent'), null, self::$editoroptions);
+            $mform->setType('showinmodal' . $a, PARAM_RAW);
+
+            $mform->closeHeaderBefore('schedule_' . $a);
         }
 
-        $this->add_action_buttons();
+        $this->add_my_action_buttons($mform);
+    }
+    function add_my_action_buttons($mform) {
+        $buttonarray=array();
+        $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+        $buttonarray[] = $mform->createElement('submit', 'addschedule', get_string('add_schedule', 'block_scheduledcontent'));
+        //$buttonarray[] = $mform->createElement('cancel');
+        $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
     }
 
     //Custom validation should be added here

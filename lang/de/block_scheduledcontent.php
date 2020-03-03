@@ -21,7 +21,19 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Geplanter Inhalt';
-$string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten';
 
 $string['access_denied'] = 'Zugriff nicht gestattet!';
+$string['add_schedule'] = 'Geplanten Inhalt hinzufügen';
+
+$string['caption'] = 'Bezeichnung (wird nicht gezeigt)';
+$string['currently_no_scheduled_contents'] = 'Derzeit sind {$a->no} geplante Inhalte angelegt';
+$string['failed_to_save_no'] = 'Beim Speichern von {$a->no} Einträgen sind Fehler aufgetreten';
+$string['modify_contents'] = 'Verwalte geplante Inhalte';
+$string['pluginname'] = 'Geplanter Inhalt';
+$string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten';
+$string['scheduledcontent:addinstance'] = 'Füge einen neuen "Geplanter Inhalt-Block" hinzu';
+$string['scheduledcontent:myaddinstance'] = 'Füge einen neuen "Geplanter Inhalt-Block" zum Dashboard hinzu';
+$string['schedules'] = 'Planungen';
+$string['showonpage'] = 'Inhalt direkt auf Seite';
+$string['showinmodal'] = 'Inhalt in Dialogfenster';
+$string['successfully_saved_no'] = 'Erfolgeich {$a->no} Einträge gespeichert';

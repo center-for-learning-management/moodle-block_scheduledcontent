@@ -35,15 +35,14 @@ class form_schedules extends \moodleform {
     static $subdirs = 0;
 
     function definition() {
-        global $context, $DB;
+        global $DB, $schedules;
 
         $editoroptions = array('subdirs'=>0, 'maxbytes'=>0, 'maxfiles'=>0,
                                'changeformat'=>0, 'context'=>null, 'noclean'=>0,
                                'trusttext'=>0, 'enable_filemanagement' => true);
 
         $mform = $this->_form;
-        $schedules = array_values($DB->get_records('block_scheduledcontent', array('contextid' => $context->id), 'timestart ASC,timeend ASC,sort ASC'));
-        $mform->addElement('hidden', 'id', 0);
+        $mform->addElement('hidden', 'courseid', 0);
         $mform->addElement('hidden', 'elements', count($schedules));
         foreach ($schedules AS $id => $schedule) {
             $mform->addElement('header', 'schedule_' . $id,  (!empty($schedule->caption) ? $schedule->caption : '#' . $id ));
@@ -57,7 +56,9 @@ class form_schedules extends \moodleform {
 
             // @todo maybe we have to convert the timestamp to an array to pass it to the form.
             $mform->addElement('date_time_selector', 'timestart' . $id, get_string('from'));
+            $mform->setType('timestart' . $id, PARAM_INT);
             $mform->addElement('date_time_selector', 'timeend' . $id, get_string('to'));
+            $mform->setType('timeend' . $id, PARAM_INT);
 
             $mform->addElement('editor', 'showonpage' . $id, get_string('showonpage', 'block_scheduledcontent'));
             $mform->setType('showonpage' . $id, PARAM_RAW);

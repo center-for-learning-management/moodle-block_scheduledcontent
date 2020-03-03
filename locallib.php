@@ -26,10 +26,10 @@ namespace block_scheduledcontent;
 defined('MOODLE_INTERNAL') || die;
 
 class lib {
-    public static function addschedule($contextid) {
+    public static function addschedule($courseid) {
         global $DB;
         $schedule = (object) array(
-            'contextid' => $contextid,
+            'courseid' => $courseid,
             'sort' => 1,
             'timestart' => '',
             'timeend' => '',

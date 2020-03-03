@@ -26,18 +26,6 @@ defined('MOODLE_INTERNAL') || die;
 function xmldb_block_scheduledcontent_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
-    if ($oldversion < 2020030302) {
-        // Define field to be added
-        $table = new xmldb_table('block_scheduledcontent');
-        $field = new xmldb_field('contextid', XMLDB_TYPE_INT, '10', null, null, null, null, 'id');
 
-        // Conditionally launch add field.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // savepoint reached.
-        upgrade_block_savepoint(true, 2020030302, 'scheduledcontent');
-    }
     return true;
 }

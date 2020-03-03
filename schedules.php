@@ -30,15 +30,20 @@ namespace block_scheduledcontent;
 require('../../config.php');
 require_once(__DIR__ . '/locallib.php');
 
-$id = required_param('id', PARAM_INT);
-$context = \context_block::instance($id);
+$courseid = required_param('courseid', PARAM_INT);
+$context = \context_course::instance($courseid);
 
 require_login();
-$PAGE->set_url(new \moodle_url('/blocks/scheduledcontent/schedules.php', array('id' => $id)));
+$PAGE->set_url(new \moodle_url('/blocks/scheduledcontent/schedules.php', array('courseid' => $courseid)));
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pluginname', 'block_scheduledcontent'));
 $PAGE->set_title(get_string('pluginname', 'block_scheduledcontent'));
 $PAGE->requires->css('/block/scheduledcontent/main.css');
+
+$settingsnode = $PAGE->settingsnav->add(get_string('pluginname', 'block_scheduledcontent'));
+$editurl = new \moodle_url('/blocks/scheduled/schedule.php', array('courseid' => $courseid));
+$editnode = $settingsnode->add(get_string('edit'), $editurl);
+$editnode->make_active();
 
 echo $OUTPUT->header();
 if (!has_capability('block/scheduledcontent:manage', $context)) {
@@ -52,13 +57,15 @@ if (!has_capability('block/scheduledcontent:manage', $context)) {
 }
 
 if (!empty(optional_param('addschedule', '', PARAM_TEXT))) {
-    lib::addschedule($context->id);
+    lib::addschedule($courseid);
     redirect($PAGE->url->__toString());
 }
 
-echo $OUTPUT->render_from_template('block_scheduledcontent/add_schedule', array('id' => $id));
+echo $OUTPUT->render_from_template('block_scheduledcontent/add_schedule', array('courseid' => $courseid));
 
 require_once($CFG->dirroot . '/blocks/scheduledcontent/classes/form_schedules.php');
+
+$schedules = array_values($DB->get_records('block_scheduledcontent', array('courseid' => $courseid), 'sort ASC,timestart ASC,timeend ASC'));
 $mform = new form_schedules();
 if ($data = $mform->get_data()) {
     $success = 0; $failed = 0;
@@ -76,9 +83,9 @@ if ($data = $mform->get_data()) {
         $showinmodaltext = file_save_draft_area_files($showinmodaldraftid, $context->id, 'block_scheduledcontent', 'showinmodal',
                             $data->{'id' . $a}, array('subdirs'=>false), $showinmodaltext);
 
-        $schedule = (object) array(
+        $schedules[$a] = (object) array(
             'id' => $data->{'id' . $a},
-            'contextid' => $context->id,
+            'blockid' => $blockid,
             'sort' => $data->{'sort' . $a},
             'timestart' => $data->{'timestart' . $a},
             'timeend' => $data->{'timeend' . $a},
@@ -88,7 +95,7 @@ if ($data = $mform->get_data()) {
             'showinmodal' => $showinmodaltext,
             'showinmodalformat' => $showinmodalformat,
         );
-        if ($DB->update_record('block_scheduledcontent', $schedule)) {
+        if ($DB->update_record('block_scheduledcontent', $schedules[$a])) {
             $success++;
         } else {
             $failed++;
@@ -108,27 +115,27 @@ if ($data = $mform->get_data()) {
     }
 }
 
-$schedules = array_values($DB->get_records('block_scheduledcontent', array('contextid' => $context->id), 'timestart ASC,timeend ASC,sort ASC'));
+
 if (count($schedules) == 0) {
-    lib::addschedule($context->id);
+    lib::addschedule($courseid);
     redirect($PAGE->url->__toString());
 }
-$data = array('id' => $id);
-foreach ($schedules AS $id => $schedule) {
+
+$data = array('courseid' => $courseid);
+foreach ($schedules AS $a => $schedule) {
     $fields = array_keys((array) $schedule);
     foreach ($fields AS $field) {
-        $data[$field . $id] = $schedule->{$field};
+        $data[$field . $a] = $schedule->{$field};
     }
-    $data['showonpage' . $id] = array(
+    $data['showonpage' . $a] = array(
         'text' => $schedule->showonpage,
         'format' => $schedule->showonpageformat,
     );
-    $data['showinmodal' . $id] = array(
+    $data['showinmodal' . $a] = array(
         'text' => $schedule->showinmodal,
         'format' => $schedule->showinmodalformat,
     );
 }
-
 $mform->set_data($data);
 
 $mform->display();

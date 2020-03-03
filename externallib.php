@@ -40,7 +40,7 @@ class block_scheduledcontent_external extends external_api {
         global $DB;
         $params = self::validate_parameters(self::modal_parameters(), array('id' => $id));
         $schedule = $DB->get_record('block_scheduledcontent', array('id' => $id));
-        $context = context::instance_by_id($schedule->contextid);
+        $context = \context_course::instance($schedule->courseid);
 
         if ($context->get_course_context(false)) {
             if (is_viewing($context)) {

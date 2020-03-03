@@ -32,7 +32,7 @@ class block_scheduledcontent extends block_base /* was block_list */ {
         $this->title = get_string('pluginname', 'block_scheduledcontent');
     }
     public function get_content() {
-        global $DB, $PAGE;
+        global $COURSE, $DB, $PAGE;
         $PAGE->requires->css('/blocks/scheduledcontent/style/main.css');
 
         if ($this->content !== null) {
@@ -48,16 +48,15 @@ class block_scheduledcontent extends block_base /* was block_list */ {
                     FROM {block_scheduledcontent}
                     WHERE timestart<?
                         AND timeend>?
-                        AND contextid=?
+                        AND courseid=?
                     ORDER BY sort ASC";
         $time = time();
-        $context = \context_block::instance($this->instance->id);
-        $schedules = array_values($DB->get_records_sql($sql, array($time, $time, $context->id)));
+        $schedules = array_values($DB->get_records_sql($sql, array($time, $time, $COURSE->id)));
 
         $canmanage = $PAGE->user_is_editing($this->instance->id);
         if (!empty($canmanage)) {
             $this->content->text = '<p>' . get_string('currently_no_scheduled_contents', 'block_scheduledcontent', array('no' => count($schedules))) . '</p>';
-            $this->content->text .= '<a href="' . $CFG->wwwroot . '/blocks/scheduledcontent/schedules.php?id=' . $this->instance->id . '">';
+            $this->content->text .= '<a href="' . $CFG->wwwroot . '/blocks/scheduledcontent/schedules.php?courseid=' . $COURSE->id . '">';
             $this->content->text .= get_string('modify_contents', 'block_scheduledcontent');
             $this->content->text .= '</a>';
         } else {

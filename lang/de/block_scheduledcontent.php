@@ -33,6 +33,7 @@ $string['pluginname'] = 'Geplanter Inhalt';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten';
 $string['scheduledcontent:addinstance'] = 'Füge einen neuen "Geplanter Inhalt-Block" hinzu';
 $string['scheduledcontent:myaddinstance'] = 'Füge einen neuen "Geplanter Inhalt-Block" zum Dashboard hinzu';
+$string['scheduledcontent:manage'] = 'Verwalte Geplante Inhalte';
 $string['schedules'] = 'Planungen';
 $string['showonpage'] = 'Inhalt direkt auf Seite';
 $string['showinmodal'] = 'Inhalt in Dialogfenster';

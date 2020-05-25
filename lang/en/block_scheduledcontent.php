@@ -32,6 +32,7 @@ $string['pluginname'] = 'Scheduled Content';
 $string['privacy:metadata'] = 'This plugin does not store any personal data';
 $string['scheduledcontent:addinstance'] = 'Add a new scheduled content block';
 $string['scheduledcontent:myaddinstance'] = 'Add a new scheduled content block to the My Moodle page';
+$string['scheduledcontent:manage'] = 'Manage scheduled contents';
 $string['schedules'] = 'Schedules';
 $string['showonpage'] = 'Content on page';
 $string['showinmodal'] = 'Content in modal';

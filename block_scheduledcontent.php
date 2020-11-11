@@ -33,7 +33,7 @@ class block_scheduledcontent extends block_base /* was block_list */ {
     }
     public function get_content() {
         global $CFG, $COURSE, $DB, $PAGE;
-        $PAGE->requires->css('/blocks/scheduledcontent/style/main.css');
+        // $PAGE->requires->css('/blocks/scheduledcontent/style/main.css');
 
         if ($this->content !== null) {
           return $this->content;

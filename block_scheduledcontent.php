@@ -85,6 +85,6 @@ class block_scheduledcontent extends block_base /* was block_list */ {
     }
     public function instance_delete() {
         global $COURSE, $DB;
-        $DB->delete_records('block_scheduledcontent', array('courseid' => $COURSE->id));
+        //$DB->delete_records('block_scheduledcontent', array('courseid' => $COURSE->id));
     }
 }

@@ -39,7 +39,9 @@ class form_schedules extends \moodleform {
         $mform = $this->_form;
         $this->add_my_action_buttons($mform);
         $mform->addElement('hidden', 'courseid', 0);
+        $mform->setType('courseid', PARAM_INT);
         $mform->addElement('hidden', 'elements', count($schedules));
+        $mform->setType('elements', PARAM_INT);
         foreach ($schedules AS $a => $schedule) {
             $mform->addElement('header', 'schedule_' . $a,  (!empty($schedule->caption) ? $schedule->caption : '#' . ($a + 1) ));
             if (!empty($schedule->caption)) {
